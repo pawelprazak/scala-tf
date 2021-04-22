@@ -1,0 +1,10 @@
+project/project/target
+project/target
+target
+out
+.idea
+.bsp
+*.iml
+*.log
+*.zip
+terraform-provider-google_v3.59.0_x5
