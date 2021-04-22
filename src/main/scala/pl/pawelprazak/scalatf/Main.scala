@@ -8,6 +8,7 @@ object terraform {
   // Handshake MagicCookie used to configure clients and servers.
   object MagicCookie {
     // The magic cookie values should NEVER be changed.
+    // taken from https://github.com/hashicorp/terraform-plugin-sdk/blob/main/plugin/serve.go
     val Key = "TF_PLUGIN_MAGIC_COOKIE"
     val Value =
       "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2"
@@ -37,8 +38,7 @@ object netty {
       url match {
         case url if url.startsWith("unix:") =>
           val address = new DomainSocketAddress(url.replaceFirst("^unix:", ""))
-          val builder =
-            NettyChannelBuilder.forAddress(address).overrideAuthority(url)
+          val builder = NettyChannelBuilder.forAddress(address)
           if (Epoll.isAvailable)
             builder
               .channelType(classOf[EpollDomainSocketChannel])
@@ -55,16 +55,25 @@ object netty {
       }
 
     @throws[IOException]
-    def build(url: String): ManagedChannel = builder(url).build()
+    def build(url: String): ManagedChannel = builder(url).usePlaintext().build()
   }
 }
 
 object Hacks {
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  // TODO: run the provider using magic cookie and read the socket from JSON logs along with version etc.
+  // TODO: run the provider using magic cookie
+  //       and read the socket from JSON logs along with version etc.
+  //  fmt.Printf("%d|%d|%s|%s\n",
+  //		CoreProtocolVersion,
+  //		opts.ProtocolVersion,
+  //		listener.Addr().Network(),
+  //		listener.Addr().String())
+  //  e.g.: 1|5|unix|/var/folders/nr/rqhf2hvn3wn8q_mjysz2gq6m0000gn/T/plugin802699758|grpc|
+  //  btw. on windows it will be a tcp socket
+  //  more: https://gitlab.autonubil.net/an-public/terraform-provider-profitbricks/-/blob/master/vendor/github.com/hashicorp/go-plugin/server.go
   private val socket =
-    "unix:/var/folders/nr/rqhf2hvn3wn8q_mjysz2gq6m0000gn/T/plugin802699758"
+    "unix:/var/folders/nr/rqhf2hvn3wn8q_mjysz2gq6m0000gn/T/plugin426594755"
   val channel: ManagedChannel = netty.channel.build(socket)
   val blockingStub: ProviderGrpc.ProviderBlockingStub =
     ProviderGrpc.blockingStub(channel)

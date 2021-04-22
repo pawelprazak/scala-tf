@@ -1,3 +1,5 @@
+scalaVersion := "3.0.0-RC2"
+
 Compile / PB.targets := Seq(
   scalapb.gen() -> (Compile / sourceManaged).value / "scalapb"
 )
@@ -10,7 +12,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
-  "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
-  "io.netty" % "netty-transport-native-kqueue" % "4.1.63.Final" classifier OS.mac,
-  "io.netty" % "netty-transport-native-epoll" % "4.1.63.Final" classifier OS.linux,
+  "io.grpc" % "grpc-netty" % "1.36.1",
+  "io.netty" % "netty-transport-native-kqueue" % "4.1.52.Final" classifier OS.mac,
+  "io.netty" % "netty-transport-native-epoll" % "4.1.52.Final" classifier OS.linux
 )
