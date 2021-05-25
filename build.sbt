@@ -1,4 +1,4 @@
-scalaVersion := "3.0.0-RC2"
+scalaVersion := "3.0.0"
 
 Compile / PB.targets := Seq(
   scalapb.gen() -> (Compile / sourceManaged).value / "scalapb"
